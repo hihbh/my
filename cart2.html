@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart🛒</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 30px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #fff;
+      margin: 10px auto;
+      padding: 15px;
+      max-width: 400px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 10px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #333;
+    }
+
+    .danger {
+      background-color: #e91e63;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🛒 Cart</h2>
+<div id="cartItems"></div>
+
+<!-- الأزرار -->
+<div id="cartButtons">
+  <button onclick="goToForm()" id="orderBtn">Order</button>
+  <button onclick="clearCart()" class="danger">🗑️ delete all</button>
+  <button onclick="goBack()">⬅️ back to products</button>
+</div>
+
+<script>
+function renderCart() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let html = "<ul>";
+  let total = 0;
+
+  if (cart.length === 0) {
+    html = "<p>your cart empty🛍️</p>";
+    document.getElementById("cartButtons").style.display = "none";
+  } else {
+    document.getElementById("cartButtons").style.display = "block";
+    cart.forEach((item, index) => {
+      const subtotal = item.qty * item.price;
+      total += subtotal;
+
+      html += `<li>
+        ${item.qty} × ${item.name} = ${subtotal} E.G<br/>
+        <button onclick="removeItem(${index})">❌delete</button>
+      </li>`;
+    });
+
+    html += `</ul><p><strong>Total Price:</strong> ${total}E.G</p>`;
+  }
+
+  document.getElementById("cartItems").innerHTML = html;
+}
+
+function removeItem(index) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart.splice(index, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+function clearCart() {
+  localStorage.removeItem("cart");
+  renderCart();
+}
+
+function goToForm() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  if (cart.length === 0) {
+    alert("🚫your cart empty");
+    return;
+  }
+  window.location.href = "cart";
+}
+
+function goBack() {
+  window.location.href = "product.html"; // عدّل اسم الصفحة حسب منتجك
+}
+
+renderCart();
+</script>
+
+</body>
+</html>

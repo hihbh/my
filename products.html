@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>products</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 350px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .slider {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    .slider img {
+      width: 100%;
+      display: none;
+    }
+
+    .slider img.active {
+      display: block;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 45%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      border: none;
+      font-size: 20px;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .arrow.right {
+      left: 10px;
+    }
+
+    .arrow.left {
+      right: 10px;
+    }
+
+    .product-name {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .product-material {
+      color: #777;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    .product-price {
+      font-size: 20px;
+      color: #e91e63;
+      margin: 15px 0;
+    }
+
+    .quantity-control {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    .quantity-control button {
+      padding: 6px 12px;
+      font-size: 18px;
+      background: #000;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .quantity-control span {
+      margin: 0 15px;
+      font-size: 18px;
+      min-width: 20px;
+    }
+
+    .buy-button {
+      display: inline-block;
+      background-color: #000;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 16px;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    .buy-button:hover {
+      background-color: #333;
+    }
+
+    /* ✅ زر السلة الدائري */
+    .cart-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #000;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .cart-button:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ زر السلة -->
+  <button class="cart-button" onclick="goToCart()">🛒</button>
+
+  <div class="product-card">
+    <div class="slider">
+      <img src="co1__3_-removebg-preview.png" class="active" alt="صورة 1">
+      <img src="cobra_b-removebg-preview.png" alt="صورة 2">
+      <button class="arrow right" onclick="prevImage()">◀</button>
+      <button class="arrow left" onclick="nextImage()">▶</button>
+    </div>
+
+    <div class="product-name">blue cobra</div>
+    <div class="product-material"></div>
+    <div class="product-price">Price: 400 E.G</div>
+
+    <div class="quantity-control">
+      <button onclick="decreaseQuantity()">-</button>
+      <span id="quantity">1</span>
+      <button onclick="increaseQuantity()">+</button>
+    </div>
+
+    <button onclick="orderNow()" class="buy-button">Order</button>
+
+    <button onclick="addToCart('blue cobra', quantity)" class="buy-button">add to cart</button>
+  </div>
+
+  <script>
+    // ✅ زر Order: يضيف المنتج مباشرة للسلة ويفتح صفحة الطلب
+function orderNow() {
+  // نبدأ بسلة جديدة ونضيف المنتج إليها
+  const cart = [];
+
+  cart.push({
+    name: "blue cobra",
+    qty: quantity,
+    price: 400
+  });
+
+  // نخزّن المنتج في localStorage
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  // نحول المستخدم لصفحة الطلب
+  window.location.href = "cart.html";
+}
+
+    // السلايدر
+    let current = 0;
+    const images = document.querySelectorAll('.slider img');
+    function showImage(index) {
+      images.forEach(img => img.classList.remove('active'));
+      images[index].classList.add('active');
+    }
+    function nextImage() {
+      current = (current + 1) % images.length;
+      showImage(current);
+    }
+    function prevImage() {
+      current = (current - 1 + images.length) % images.length;
+      showImage(current);
+    }
+
+    // الكمية
+    let quantity = 1;
+    const quantitySpan = document.getElementById('quantity');
+    const orderLink = document.getElementById('orderLink');
+
+    function updateOrderLink() {
+      orderLink.href = `cart.html?tshirt=blue%20cobra&qty=${quantity}`;
+    }
+
+    function increaseQuantity() {
+      quantity++;
+      quantitySpan.textContent = quantity;
+      updateOrderLink();
+    }
+
+    function decreaseQuantity() {
+      if (quantity > 1) {
+        quantity--;
+        quantitySpan.textContent = quantity;
+        updateOrderLink();
+      }
+    }
+
+    // إضافة إلى السلة
+    function addToCart(name, qty) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      cart.push({
+        name: name,
+        qty: parseInt(qty) || 1,
+        price: 400
+      });
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert("The product has been added to cart successfuly✅");
+      
+    }
+
+    // ✅ يودّي المستخدم إلى صفحة السلة
+    function goToCart() {
+      window.location.href = "cart2.html";
+    }
+  </script>
+
+</body>
+</html>
